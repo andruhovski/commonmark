@@ -1,0 +1,38 @@
+# Binaries for programs and plugins
+main
+commonmark
+*.exe
+*.exe~
+*.so
+*.dylib
+*.dll
+
+# Ignore binary output folders
+bin/
+
+# Ignore common editor/system specific metadata
+.DS_Store
+.idea/
+.vscode/
+*.iml
+
+# ENV
+.env
+
+# Web assets and local databases
+*.db
+*.js
+
+# Modules installed with `v install --local` land beside this file, one
+# directory per module. Add them here if they should stay out of the repo.
+
+# Differential-test build output
+tests/.validation/
+
+# Local CI/compiler builds
+.ci-v/
+*.exe.manifest
+examples/events/events
+examples/events/main
+
+/commonmark-events

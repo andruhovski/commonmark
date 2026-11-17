@@ -1,0 +1,27 @@
+name: CI
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build V
+        run: |
+          git clone --depth 1 https://github.com/vlang/v.git .ci-v
+          make -C .ci-v
+          echo "$GITHUB_WORKSPACE/.ci-v" >> "$GITHUB_PATH"
+      - name: Check formatting
+        run: v fmt -verify md4c.v parser.v md4c_test.v examples/events/main.v tests/public_api_test.v
+      - name: Test module and public API
+        run: v test md4c_test.v tests/public_api_test.v
+      - name: Build example
+        run: v -o /tmp/commonmark-events examples/events
+      - name: Compare with MD4C
+        shell: pwsh
+        run: ./tests/compare.ps1
