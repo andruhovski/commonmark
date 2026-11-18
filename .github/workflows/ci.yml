@@ -17,11 +17,13 @@ jobs:
           make -C .ci-v
           echo "$GITHUB_WORKSPACE/.ci-v" >> "$GITHUB_PATH"
       - name: Check formatting
-        run: v fmt -verify md4c.v parser.v md4c_test.v examples/events/main.v tests/public_api_test.v
+        run: v fmt -verify md4c.v parser.v md4c_test.v examples/events/main.v tests/public_api_test.v examples/md2html/main.v examples/md2html/render.v examples/md2html/render_test.v
       - name: Test module and public API
-        run: v test md4c_test.v tests/public_api_test.v
+        run: v test md4c_test.v tests/public_api_test.v examples/md2html
       - name: Build example
-        run: v -o /tmp/commonmark-events examples/events
+        run: |
+          v -o /tmp/commonmark-events examples/events
+          v -o /tmp/md2html examples/md2html
       - name: Compare with MD4C
         shell: pwsh
         run: ./tests/compare.ps1
