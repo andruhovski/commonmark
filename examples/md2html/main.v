@@ -86,7 +86,10 @@ fn parse_options(args []string) !Options {
 						options.output = value
 					}
 					'--html-title' { options.title = value }
-					'--html-css' { options.css << value }
+'--html-css' {
+	if value == '' { return error('CSS URL cannot be empty') }
+	options.css << value
+}
 					else {}
 				}
 				continue

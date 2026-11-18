@@ -255,7 +255,7 @@ fn convert(input string, options Options) !string {
 	mut watch := time.new_stopwatch()
 	result := commonmark.parse(input, &parser, &renderer)
 	watch.stop()
-	if options.stat { eprintln('Parsing time: ${watch.elapsed().microseconds()} µs') }
+	if options.stat { eprintln('Parse+render time: ${watch.elapsed().microseconds()} µs') }
 	if result != 0 { return error('Markdown parsing failed (${result})') }
 	body := renderer.out.str()
 	if !options.full { return body }
