@@ -10,6 +10,7 @@ and the other extensions present in the bundled MD4C reference.
 - `md4c.v`: parser implementation, callback types, enums, and detail structures.
 - `parser.v`: string parsing wrapper, owned attribute strings, and flag constants.
 - `examples/events/`: CLI that prints the complete parser event stream.
+- `examples/md2html/`: Markdown to HTML/XHTML command line converter.
 - `md4c_test.v` and `tests/public_api_test.v`: module and external-import tests.
 - `tests/reference/` and `tests/compare.ps1`: C reference and differential checks.
 
@@ -158,6 +159,38 @@ V tests, the example build, and these differential tests on Linux. CI builds
 the latest V checkout rather than pinning a compiler release. For contribution
 conventions, see [`AGENTS.md`](AGENTS.md).
 
+### Markdown to HTML
+
+Build and run the converter from the repository root:
+
+```sh
+v -o md2html examples/md2html
+./md2html --help
+./md2html document.md
+./md2html --gfm --full-html --html-title="My document" --html-css=style.css -o document.html document.md
+```
+
+On Windows, build with `-o md2html.exe`. With no input file (or `-`), the
+converter reads standard input. Output defaults to standard output; `-o FILE`
+writes a file. Use `--` before filenames that begin with a dash. `--stat` reports
+parser and renderer callback time on standard error, in microseconds.
+
+CommonMark is the default dialect. `--gfm` and `--github` select this module's
+GitHub preset. Dialect options replace earlier parser flags; extension options
+such as `--ftables`, `--ffootnotes`, and `--fno-html` add flags to the current
+preset. `--help` lists every supported option.
+
+The default output is an HTML fragment. `--full-html` adds the document wrapper,
+escaped title, and optional CSS links (repeat `--html-css` for multiple stylesheets).
+`--xhtml` uses XML-style void elements; combine it with `--full-html` for an XHTML
+document. Entity references are decoded and escaped by default;
+`--fverbatim-entities` preserves them. Math spans use `\(...\)` and `\[...\]`
+delimiters inside spans for a client-side math renderer. Spoilers and admonitions
+have CSS classes for styling. Raw HTML and link destinations are passed through;
+this example does not sanitize untrusted Markdown.
+
+Run converter regression tests with `v test examples/md2html`.
+
 ## Implementation and scope
 
 The parser algorithms run in V. The port retains MD4C's pointer-based design,
@@ -166,8 +199,9 @@ standard C allocation, memory, sorting, and search functions. It does not link
 the original C parser. Lookup tables initialize once at startup; parse calls
 use separate contexts.
 
-Only UTF-8 is supported. ASCII-only and UTF-16 variants, the MD4C HTML renderer,
-and entity decoding are outside this module. Tests provide regression coverage,
+Only UTF-8 is supported. ASCII-only and UTF-16 variants and the original MD4C
+HTML renderer are outside this module. The md2html example implements its own
+renderer and uses V's standard library for entity decoding. Tests provide regression coverage,
 not a claim of exhaustive CommonMark conformance.
 
 `tests/reference/` contains the original C parser and a small test harness solely
